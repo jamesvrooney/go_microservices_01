@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"mvc-james/services"
+	"mvc-james/utils"
 	"net/http"
 	"strconv"
 )
@@ -14,17 +15,27 @@ func GetUser(writer http.ResponseWriter, request *http.Request) {
 	userID, err := strconv.ParseInt(userIDParam, 10, 64)
 
 	if err != nil {
-		writer.WriteHeader(http.StatusBadRequest)
-		writer.Write([]byte("user_id must be a number"))
+		appErr := &utils.ApplicationError{
+			Message:    "user_id must be a number",
+			StatusCode: http.StatusBadRequest,
+			Code:       "bad_request",
+		}
+
+		json, _ := json.Marshal(appErr)
+
+		writer.WriteHeader(appErr.StatusCode)
+		writer.Write(json)
 
 		return
 	}
 
-	user, err := services.GetUser(userID)
+	user, appErr := services.GetUser(userID)
 
-	if err != nil {
-		writer.WriteHeader(http.StatusNotFound)
-		writer.Write([]byte(err.Error()))
+	if appErr != nil {
+		json, _ := json.Marshal(appErr)
+
+		writer.WriteHeader(appErr.StatusCode)
+		writer.Write(json)
 
 		return
 	}

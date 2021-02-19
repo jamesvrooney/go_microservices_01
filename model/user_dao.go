@@ -2,6 +2,8 @@ package model
 
 import (
 	"fmt"
+	"mvc-james/utils"
+	"net/http"
 )
 
 var (
@@ -13,10 +15,14 @@ var (
 )
 
 // GetUser Retieve user from database
-func GetUser(userID int64) (*User, error) {
+func GetUser(userID int64) (*User, *utils.ApplicationError) {
 	if user := users[userID]; user != nil {
 		return user, nil
 	}
 
-	return nil, fmt.Errorf("This user %v cannot be found", userID)
+	return nil, &utils.ApplicationError{
+		Message:    "The user with this user_id is not found",
+		StatusCode: http.StatusNotFound,
+		Code:       fmt.Sprintf("This user %v cannot be found", userID),
+	}
 }
