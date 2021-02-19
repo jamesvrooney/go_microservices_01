@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"encoding/json"
 	"mvc-james/services"
 	"net/http"
 	"strconv"
@@ -11,17 +11,25 @@ import (
 func GetUser(writer http.ResponseWriter, request *http.Request) {
 	userIDParam := request.URL.Query().Get("user_id")
 
-	userId, err := strconv.ParseInt(userIDParam, 10, 64)
+	userID, err := strconv.ParseInt(userIDParam, 10, 64)
 
 	if err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte("user_id must be a number"))
+
 		return
 	}
 
-	user, err := services.GetUser(userId)
+	user, err := services.GetUser(userID)
 
 	if err != nil {
+		writer.WriteHeader(http.StatusNotFound)
+		writer.Write([]byte(err.Error()))
+
 		return
 	}
 
-	fmt.Fprint(writer, user)
+	jsonValue, _ := json.Marshal(*user)
+
+	writer.Write(jsonValue)
 }
