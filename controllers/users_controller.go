@@ -29,7 +29,7 @@ func GetUser(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	user, appErr := services.GetUser(userID)
+	user, appErr := services.UserService.GetUser(userID)
 
 	if appErr != nil {
 		json, _ := json.Marshal(appErr)
