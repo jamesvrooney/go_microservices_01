@@ -5,13 +5,20 @@ import (
 	"mvc-james/utils"
 )
 
-type userService struct {
+func init() {
+	UserService = &userService{}
 }
 
+type userServiceInterface interface {
+	GetUser(int64) (*model.User, *utils.ApplicationError)
+}
+
+type userService struct{}
+
 // UserService Defines the UserService
-var UserService userService
+var UserService userServiceInterface
 
 // GetUser Return a user
 func (u *userService) GetUser(userID int64) (*model.User, *utils.ApplicationError) {
-	return model.GetUser(userID)
+	return model.UserDao.GetUser(userID)
 }
